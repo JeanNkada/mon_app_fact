@@ -40,7 +40,7 @@
                         More option
                     </a>
                     <div class="dropdown-menu">
-                    <a class="dropdown-item" href="#"> Add customer </a>
+                    <a class="dropdown-item" href="{% url 'add-customer' %}"> Add customer </a>
                     <a class="dropdown-item" href="#">Add admin</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="#">Statistic</a>
@@ -50,6 +50,21 @@
         </div>
     </nav>
 </header>
+
+<!-- code pour la lecture des messages erreurs -->
+<div class="container">
+    <div class="wrapper">
+        {% for message in messages %}
+        <div class="alert {{message.tags}} alert-dismissible" role="alert" >
+            <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                <span aria-hidden="true">&time</span>
+            </button>
+            <!-- affichage du message -->
+            {{ message|safe }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
 <!-- fin header -->
 <div class="container">
     {% block content %}
@@ -61,7 +76,7 @@
         <!--copyright-->
         <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.3);">
             invoice system © 2024
-            <a href="">John Python</a>
+            <a href="https://github.com/JeanNkada/mon_app_fact/">John Python</a>
         </div>
         <!--end copyright-->
     </footer>
