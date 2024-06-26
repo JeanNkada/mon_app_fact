@@ -7,8 +7,8 @@
 <br><br>
 
 <div class="row">
-    <a href="#" class="btn col-md-4 btn-primary">
-        Register a new Invoice <span class="badge text-bg-secondary"></span>
+    <a href="{% url 'add-invoice' %}" class="btn col-md-4 btn-primary">
+        Register a New Invoice <span class="badge text-bg-secondary"></span>
     </a>
 
     <a href='#' class="col-md-4">
@@ -16,7 +16,7 @@
     </a>
 
     <a href="{% url 'add-customer' %}" class="btn col-md-4 btn-primary">
-        Register a new Customer <span class="badge text-bg-secondary"></span>
+        Register a New Customer <span class="badge text-bg-secondary"></span>
     </a>
 
 </div>
@@ -48,7 +48,8 @@
                 <th scope="row">{{ facture.pk }}</th>
                 <td>{{facture.customer.name}}</td>
                 <td>{{facture.invoice_date_time}}</td>
-                <td>{{ facture.get_total }}</td>                    <!--valider si la facture a été payé ou pas-->
+                <td>{{ facture.get_total }}</td>                   
+                <!--valider si la facture a été payé ou pas-->
                 <td>
                     {% if facture.paid %}
                     <img src="{% static 'images/icon-yes.svg' %}" alt="True">
@@ -58,7 +59,7 @@
                 </td>
                 <!--afficher le type de facture-->
                 <td>{{facture.invoice_type_display }}</td>
-                <!--action sur la facture-->
+                <!--actions sur la facture-->
                 <td>
                     <a href="#" title="Detail" class="badge text-white bg-success">View</a>
 

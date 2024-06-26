@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<br><br><br><br>
+<h1 class="text-capitalise text-center mx-10 bg-dark text-white">Register A New Invoice</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="customer">Customer</label>
+            <select name="customer" class="form-control" required id="customer">
+                <option>Choose the customer ...</option>
+                {% for customer in customers %}
+                    <option value="{{customer.id}}">{{forloop.counter}}.{{customer.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="invoice">Invoice Type</label>
+            <select name="invoice_type" class="form-control" required id="invoice">
+                <option>Choose invoice type ...</option>
+                <option value="R">RECEIPT</option>
+                <option value="I">INVOICE</option>
+                <option value="P">PROFORMA INVOICE</option>
+            </select>
+        </div>
+    </div>
+    <div id="wrapper">
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="article-1">#1 Item name</label>
+                <input name="article" required type="text" class="form-control" id="article-1">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="qty-1">Quantity</label>
+                <input name="qty" required type="number" min="1" step="0.1" class="form-control" id="qty-1">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="unit-1">Unit Price</label>
+                <input name="unit" required type="number" min="1" step="0.1" onchange="handleChangeSingleArticle(this.id)" class="form-control" id="unit-1">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="total-a-1">Total</label>
+                <input name="total-a" required type="number" step="0.1" readonly class="form-control" id="total-a-1">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="total">Total</label>
+            <input value="0" name="total" required type="number" step="0.1" readonly class="form-control" id="total">
+        </div>
+    </div>
+    
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label for="comment">Comments</label>
+            <textarea name="comment" id="comment" class="form-control" cols="30" rows="1"></textarea>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+        
+</form>
+<br><br><br>
+<div class="row">
+    <button id="btn-add" class="btn btn-outline-danger w-50 col-md-6">Add a new item line</button>
+    <button id="btn-remove" class="btn btn-outline-warning w-50 col-md-6">Remove last item line</button>
+</div>
+<br><br>
+
+<!--code pour ajouté et supprimer les champs en javascript-->
+
+<script type="text/javascript">
+    //click to add new line
+    $(document).on('click', '#btn-add', function(){
+        var number = $('#wrapper').children().length + 1;
+        let formAdd =`  
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="article-${number}">${number} Item name</label>
+                                <input name="article" required type="text" class="form-control" id="article-${number}">
+                            </div>
+                            <div class="form-group col-md-2">
+                                <label for="qty-${number}">Quantity</label>
+                                <input name="qty" required type="number" min="1" step="0.1" class="form-control" id="qty-${number}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="unit-${number}">Unit Price</label>
+                                <input name="unit" required type="number" min="1" step="0.1" onchange="handleChangeSingleArticle(this.id)" class="form-control" id="unit-${number}">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="total-a-${number}">Total</label>
+                                <input name="total-a" required type="number" step="0.1" readonly class="form-control" id="total-a-${number}">
+                            </div>
+                        </div>
+                    `;
+                $('#wrapper:last').append(formAdd);
+            })
+
+    //Remove last item line
+    $(document).on('click', '#btn-remove', function(){
+        $('#wrapper').children().last().remove();
+    })
+
+    // calcul des differentes totals (total pour chaque ligne et total pour toute les ligne)
+
+function handleChangeSingleArticle(id){
+    
+    let articleId = id.split('-')[1];
+
+    let idQty = `#qty-${articleId}`;
+
+    let unitId = `#unit-${articleId}`;
+
+    let totalIdLine = `#total-a-${articleId}`;
+
+    let totalLine = parseFloat($(idQty).val()) * parseFloat($(unitId).val());
+
+    $(totalIdLine).val(totalLine);
+
+    $('#total').val(parseFloat($('#total').val()) + totalLine);
+
+    }
+
+// modifier la quantité ou le prix d'un article et recalculer le total
+
+
+    $(document).on('change', '[id^=qty-], [id^=unit-]', function(){
+        let id = $(this).attr('id');
+        let articleId = id.split('-')[1];
+        let idQty = `#qty-${articleId}`;
+        let unitId = `#unit-${articleId}`;
+        let totalIdLine = `#total-a-${articleId}`;
+        
+        let quantity = parseFloat($(idQty).val());
+        let unitPrice = parseFloat($(unitId).val());
+        
+        if (!isNaN(quantity) && !isNaN(unitPrice)) {
+            let totalLine = quantity * unitPrice;
+            $(totalIdLine).val(totalLine.toFixed(2)); // Mettre à jour le total de l'article avec 2 décimales
+        } else {
+            $(totalIdLine).val('0.00'); // Gérer le cas où les valeurs ne sont pas numériques
+        }
+        
+        // Recalculer le total global
+        let total = 0;
+        $('[id^=total-a-]').each(function() {
+            let lineTotal = parseFloat($(this).val());
+            if (!isNaN(lineTotal)) {
+                total += lineTotal;
+            }
+        });
+        
+        $('#total').val(total.toFixed(2)); // Mettre à jour le champ total global avec 2 décimales
+    });
+    
+    $(document).ready(function() {
+        // Capturer l'événement de clic sur le bouton de suppression
+        $(document).on('click', '#btn-remove', function() {
+            let articleId = $(this).data('article-id');
+            let totalIdLine = `#total-a-${articleId}`;
+            
+            // Supprimer la ligne d'article
+            $(`#article-${articleId}`).remove();
+            
+            // Recalculer le total global
+            let total = 0;
+            $('[id^=total-a-]').each(function() {
+                let lineTotal = parseFloat($(this).val());
+                if (!isNaN(lineTotal)) {
+                    total += lineTotal;
+                }
+            });
+            
+            // Mettre à jour le champ total global avec 2 décimales
+            $('#total').val(total.toFixed(2));
+        });
+        
+        // Fonction pour recalculer le total global au chargement de la page
+        function calculateTotal() {
+            let total = 0;
+            $('[id^=total-a-]').each(function() {
+                let lineTotal = parseFloat($(this).val());
+                if (!isNaN(lineTotal)) {
+                    total += lineTotal;
+                }
+            });
+            
+            $('#total').val(total.toFixed(2)); // Mettre à jour le champ total global avec 2 décimales
+        }
+        
+        calculateTotal(); // Appel initial pour calculer le total global au chargement de la page
+    });
+
+</script>
+{% endblock content %}
+

@@ -2,9 +2,10 @@ from django.shortcuts import render
 from django.views import View
 from .models import *
 from django.contrib import messages
+from django.db import transaction
 
-# Create your views here.
 
+# code pour lister les factures sur l'ecran
 class HomeView(View):
     """Main View"""
     
@@ -59,3 +60,77 @@ class AddCustomerView(View):
             
         return render(request, self.templates_name)
 # fin d'enrégistrement du nouveau client
+
+# dedut du code d'enregistrement d'une nouvelle facture
+class AddInvoiceView(View):
+    
+    """Add new invoice view"""
+    
+    templates_name = 'add_invoice.html'
+    customers = Customer.objects.select_related('save_by').all()
+    context = {
+        'customers': customers 
+    }
+    
+    def get(self, request, *args, **kwargs):
+        
+        return render(request, self.templates_name, self.context)
+    
+    @transaction.atomic()
+    def post(self, request, *args, **kwargs):
+        
+        items =[]
+        
+        try:
+            
+            customer = request.POST.get('customer')
+            
+            type =request.POST.get('invoice_type')
+            
+            articles = request.POST.getlist('article') # getlist pour la recupération de tous les articles
+            
+            qties = request.POST.getlist('qty')
+            
+            units = request.POST.getlist('unit')
+            
+            total_a = request.POST.getlist('total-a')
+            
+            total = request.POST.get('total')
+            
+            comment = request.POST.get('comment')
+            
+            # creaton de l'objet facture
+            invoice_object = {
+                'customer_id': customer,
+                'save_by': request.user,
+                'total': total,
+                'invoice_type': type,
+                'comment': comment
+            }
+            
+            invoice = Invoice.objects.create(**invoice_object)
+            
+            # maintenant on lie les objets aux articles
+            for index, article in enumerate(articles):
+                
+                data = Article(
+                    invoice_id= invoice.id,
+                    name = article,
+                    quantity = qties[index],
+                    unit_price = units[index],
+                    total = total_a[index],
+                )
+                
+                items.append(data)
+            
+            created = Article.objects.bulk_create(items)# prend un ensemble d'object et crait une fois
+            
+            if created:
+                messages.success(request, 'Data save successfully.')
+            else:
+                messages.error(request, 'Sorry, pleace try again the sent data is corrupt.')
+            
+        except Exception as e:
+            messages.error(request, f'Sorry the following error has occured {e}')
+        
+        return render(request, self.templates_name, self.context)
