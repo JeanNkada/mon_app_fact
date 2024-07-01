@@ -2,7 +2,11 @@ from django.shortcuts import render
 from django.views import View
 from .models import *
 from django.contrib import messages
+
 from django.db import transaction
+from .utils import pagination
+
+
 
 
 # code pour lister les factures sur l'ecran
@@ -17,15 +21,26 @@ class HomeView(View):
     le any prend plusieurs tables reliés à une table 
     et les joins pour en faire une seul table """
     
-    invoices = Invoice.objects.select_related('customer', 'save_by').all()
+    invoices = Invoice.objects.select_related('customer', 'save_by').all().order_by('-invoice_date_time')
+    
     context = {
         'invoices': invoices
     }
+    
     def get(self, request, *args, **kwargs):
+        
+        items = pagination(request, self.invoices)
+        
+        self.context['invoices'] = items
         
         return render(request, self.templates_name, self.context)
     
     def post(self, request, *args, **kwargs):
+        
+        items = pagination(request, self.invoices)
+        
+        self.context['invoices'] = items
+        
         return render(request, self.templates_name, self.context)
     
 # dedut du coded'enregistrement d'un nouveau client
@@ -79,7 +94,7 @@ class AddInvoiceView(View):
     @transaction.atomic()
     def post(self, request, *args, **kwargs):
         
-        items =[]
+        items = []
         
         try:
             

@@ -43,41 +43,73 @@
         <tbody id="myTable">
             <!--la requette pour avoir toutes les facture-->
             {% if invoices %}
-            {% for facture in invoices %}
-                <tr>
-                <th scope="row">{{ facture.pk }}</th>
-                <td>{{facture.customer.name}}</td>
-                <td>{{facture.invoice_date_time}}</td>
-                <td>{{ facture.get_total }}</td>                   
-                <!--valider si la facture a été payé ou pas-->
-                <td>
-                    {% if facture.paid %}
-                    <img src="{% static 'images/icon-yes.svg' %}" alt="True">
-                    {% else %}
-                    <img src="{% static 'images/icon-no.svg' %}" alt="False">
+                {% for facture in invoices %}
+                    <tr>
+                    <th scope="row">{{ facture.pk }}</th>
+                    <td>{{facture.customer.name}}</td>
+                    <td>{{facture.invoice_date_time}}</td>
+                    <td>{{ facture.get_total }}</td>                   
+                    <!--valider si la facture a été payé ou pas-->
+                    <td>
+                        {% if facture.paid %}
+                        <img src="{% static 'images/icon-yes.svg' %}" alt="True">
+                        {% else %}
+                        <img src="{% static 'images/icon-no.svg' %}" alt="False">
+                        {% endif %}
+                    </td>
+                    <!--afficher le type de facture-->
+                    <td>{{facture.get_invoice_type_display }}</td>
+                    <!--actions sur la facture-->
+                    <td>
+                        <a href="#" title="Detail" class="badge text-white bg-success">View</a>
+
+                    <button id="btn-invoice-sup" type="button" data-toggle="modal" data-target="#supprimer"
+                            class="badge text-white bg-danger" title="Supprimer" data-id="{{ facture.pk }}"
+                            data-customer="{{facture.customer.name}}">Delete
+                    </button>
+
+                    <button id="btn-invoice-mod" type="button" data-toggle="modal" title="Modifier" data-target="#modifier"
+                            data-id="{{facture.pk}}" data-customer="{{facture.customer.name}}"
+                        class="badge text-dark bg-warning">Modify
+                    </button>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+                <!-- Pagination -->
+
+                {% if invoices.has_other_pages %}
+                <div class="btn-group" role="group" aria-label="Item pagination">
+
+                    {% if invoices.has_previous %}
+                        <a href="?page={{invoices.previous_page_number}}" class="btn btn-outline-primary"> &laquo;</a>
                     {% endif %}
-                </td>
-                <!--afficher le type de facture-->
-                <td>{{facture.invoice_type_display }}</td>
-                <!--actions sur la facture-->
-                <td>
-                    <a href="#" title="Detail" class="badge text-white bg-success">View</a>
 
-                <button id="btn-invoice-sup" type="button" data-toggle="modal" data-target="#supprimer"
-                        class="badge text-white bg-danger" title="Supprimer" data-id="{{ facture.pk }}"
-                        data-customer="{{facture.customer.name}}">Delete
-                </button>
+                    {% for page_number in invoices.paginator.page_range %}
 
-                <button id="btn-invoice-mod" type="button" data-toggle="modal" title="Modifier" data-target="#modifier"
-                        data-id="{{facture.pk}}" data-customer="{{facture.customer.name}}"
-                    class="badge text-dark bg-warning">Modify
-                </button>
-                </td>
-            </tr>
+                        {% if invoices.number == page_number %}
+                            <!--<a href="?page={{ page_number }}" class="btn btn-outline-primary active">{{ page_number }}</a>-->
+                            <button>
+                                <span> {{page_number}} <span class="sr-only">(current)</span></span>
+                            </button>
+                        {% else %}
 
-            {% endfor %}
+                            <a href="?page={{page_number}}" class="btn btn-outline-primary">{{page_number}}</a>
 
-        
+                        {% endif %}
+
+                    {% endfor %}
+
+                    {% if invoices.has_next %}
+                        <a href="?page={{invoices.next_page_number}}" class="btn btn-outline-primary"> &laquo;</a>
+                    {% endif %}
+
+
+                </div>
+
+                {% endif %}
+            
             {% else %}
                 
                 <p class="text-center text-white">No invoice found.</p>

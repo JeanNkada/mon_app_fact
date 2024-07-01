@@ -62,6 +62,7 @@ class Invoice(models.Model):
     def get_tolal(self):
         articles =self.article_set.all()
         total = sum(article.get_total for article in articles)
+        return total
     
     
 class Article(models.Model):
@@ -84,3 +85,4 @@ class Article(models.Model):
     @property
     def get_tolal(self):
         total = self.quantity*self.unit_price
+        return total
