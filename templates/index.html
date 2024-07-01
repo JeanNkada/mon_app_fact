@@ -48,7 +48,7 @@
                     <th scope="row">{{ facture.pk }}</th>
                     <td>{{facture.customer.name}}</td>
                     <td>{{facture.invoice_date_time}}</td>
-                    <td>{{ facture.get_total }}</td>                   
+                    <td>{{facture.get_total}}</td>                   
                     <!--valider si la facture a été payé ou pas-->
                     <td>
                         {% if facture.paid %}
@@ -122,8 +122,7 @@
 </div>
 
 <!-- Modal modifier (l'action qui s'exécute lorsqu'on appuis le bouton modifier)-->
-<div class="modal fade" id="modifier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="modifier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -190,7 +189,7 @@
 
 <script type="text/javascript">
 
-   // modification
+   // modification d'une facture
 
     $(document).on('click', '#btn-invoice-mod', function(){
         let invoice_id = $(this).data('id');
@@ -199,7 +198,7 @@
 
     })
 
-   // deleting of invoice
+   // suppression d'une' facture
 
     $(document).on('click', '#btn-invoice-sup', function(){
         let invoice_id = $(this).data('id');
@@ -212,12 +211,12 @@
 
 </script>
 
-
+    <!--fonction de recherche--> 
 <script>
 
     $(document).ready(function(){
         $("#search").on("keyup", function(){
-            var value = $(this).val().toLowerCase();
+            var value = $(this).val().toLowerCase(); // recupération de la valeur saisie et en le transformant en minuscule
             $("#myTable tr").filter(function(){
                 $(this).toggle($(this).text().toLocaleLowerCase().indexOf(value)>-1)
             });
@@ -225,6 +224,8 @@
     });
 
 </script>
+
+
 
 
 

@@ -37,6 +37,55 @@ class HomeView(View):
     
     def post(self, request, *args, **kwargs):
         
+        #modify
+        if request.POST.get('id_modified'):
+            
+            paid = request.POST.get('modified')
+            
+            try:
+                obj =Invoice.objects.get(id=request.POST.get('id_modified'))
+                
+                if paid == 'True':
+                    
+                    obj.paid = True
+                    
+                else:
+                    
+                    obj.paid = False
+                    
+                obj.save()
+                
+                messages.success(request, 'Invoice status updated successfully.')
+                
+            except Exception as e:
+                
+                messages.error(request, f'Error updating invoice status: {e}')
+            
+        #delete
+        if request.POST.get('id_delete'):
+            
+            try:
+                obj = Invoice.objects.get(id=request.POST.get('id_delete'))
+                
+                obj.delete()
+                
+                messages.success(request, 'Invoice deleted successfully.')
+                
+            except Exception as e:
+                
+                messages.error(request, f'Error deleting invoice: {e}')
+            
+        # pagination
+        if request.POST.get('page'):
+            
+            page = request.POST.get('page')
+            
+            items = pagination(request, self.invoices, page)
+            
+            self.context['invoices'] = items
+            
+        return render(request, self.templates_name, self.context)
+            
         items = pagination(request, self.invoices)
         
         self.context['invoices'] = items

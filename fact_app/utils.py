@@ -14,7 +14,7 @@ def pagination(request, invoices):
     
     paginator = Paginator(invoices, items_per_page)
     
-    #verification sur les page
+    #verification sur les pages
     try:
         
         items_page = paginator.page(page)
