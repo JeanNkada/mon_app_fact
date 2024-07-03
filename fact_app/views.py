@@ -3,8 +3,19 @@ from django.views import View
 from .models import *
 from django.contrib import messages
 
+from django.http import HttpResponse
+
+import pdfkit
+
+import datetime
+
+import os
+
+from django.template.loader import get_template
+
 from django.db import transaction
-from .utils import pagination
+
+from .utils import pagination, get_invoice
 
 
 
@@ -86,11 +97,6 @@ class HomeView(View):
             
         return render(request, self.templates_name, self.context)
             
-        items = pagination(request, self.invoices)
-        
-        self.context['invoices'] = items
-        
-        return render(request, self.templates_name, self.context)
     
 # dedut du coded'enregistrement d'un nouveau client
 class AddCustomerView(View):
@@ -198,3 +204,51 @@ class AddInvoiceView(View):
             messages.error(request, f'Sorry the following error has occured {e}')
         
         return render(request, self.templates_name, self.context)
+
+class InvoiceVisualizationView(View):
+    """this view helps to visualize the invoice"""
+    
+    template_name = 'invoice.html'
+    
+    def get(self, request, *args, **kwargs):
+        
+        pk = kwargs.get('pk')
+        
+        context = get_invoice(pk)
+        
+        return render(request, self.template_name, context)
+    
+
+def get_invoice_pdf(request, *args, **kwargs):
+    
+    """ générer un fichier pdf à partir d'un fichier html """
+    
+    pk = kwargs.get('pk')
+    
+    context = get_invoice(pk)
+    context['date'] = datetime.datetime.today()
+    
+    #fichier html (on crait le fichier html sans les liens dynamique)
+    template = get_template('invoice_pdf.html')
+    
+    #envoi des variable de context directement dans le template
+    html = template.render(context)
+    
+    #option du format pdf
+    #option du format pdf
+    options = {
+        'page_size': 'letter',
+        'encoding': 'UTF-8',
+        'enable-local-file-access': ''
+    }
+    
+    #génération du pdf
+    config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files (x86)\thirdparty\wkhtmltopdf.exe')
+    pdf = pdfkit.from_string(html, False, configuration=config)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    
+    response['Content-Disposition'] = "attachement"
+    
+    return response
+    
+    

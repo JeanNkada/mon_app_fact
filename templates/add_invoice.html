@@ -10,7 +10,7 @@
         <div class="form-group col-md-12">
             <label for="customer">Customer</label>
             <select name="customer" class="form-control" required id="customer">
-                <option>Choose the customer ...</option>
+                <option>Choose the customer...</option>
                 {% for customer in customers %}
                     <option value="{{customer.id}}">{{forloop.counter}}.{{customer.name}}</option>
                 {% endfor %}
