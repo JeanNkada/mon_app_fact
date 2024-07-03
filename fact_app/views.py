@@ -9,6 +9,11 @@ import pdfkit
 
 import datetime
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .decorators import *
+
 import os
 
 from django.template.loader import get_template
@@ -21,7 +26,7 @@ from .utils import pagination, get_invoice
 
 
 # code pour lister les factures sur l'ecran
-class HomeView(View):
+class HomeView(LoginRequiredSuperuserMixin, View):
     """Main View"""
     
     templates_name = 'index.html'
@@ -99,7 +104,7 @@ class HomeView(View):
             
     
 # dedut du coded'enregistrement d'un nouveau client
-class AddCustomerView(View):
+class AddCustomerView(LoginRequiredSuperuserMixin, View):
     """Add new customer"""
     templates_name = 'add_customer.html'
     
@@ -132,7 +137,7 @@ class AddCustomerView(View):
 # fin d'enrégistrement du nouveau client
 
 # dedut du code d'enregistrement d'une nouvelle facture
-class AddInvoiceView(View):
+class AddInvoiceView(LoginRequiredSuperuserMixin, View):
     
     """Add new invoice view"""
     
@@ -205,7 +210,7 @@ class AddInvoiceView(View):
         
         return render(request, self.templates_name, self.context)
 
-class InvoiceVisualizationView(View):
+class InvoiceVisualizationView(LoginRequiredSuperuserMixin, View):
     """this view helps to visualize the invoice"""
     
     template_name = 'invoice.html'
@@ -218,7 +223,7 @@ class InvoiceVisualizationView(View):
         
         return render(request, self.template_name, context)
     
-
+@superuser_required
 def get_invoice_pdf(request, *args, **kwargs):
     
     """ générer un fichier pdf à partir d'un fichier html """
