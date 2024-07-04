@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.utils.translation import gettext_lazy as _
+
 # Create your models here.
 
 class Customer(models.Model):
@@ -8,8 +10,8 @@ class Customer(models.Model):
         name = customer models definition 
     """
     SEX_TYPE = (
-        ('M', 'Masculin'),
-        ('F', 'Feminin')
+        ('M', _('Male')),
+        ('F', _('Feminine'))
     )
     name = models.CharField(max_length=128)
     email = models.EmailField()
@@ -38,9 +40,9 @@ class Invoice(models.Model):
     author=
     """
     INVOICE_TYPE = (
-        ('R', 'RECEIPT'),
-        ('I', 'INVOICE'),
-        ('P', 'PROFORMA INVOICE')
+        ('R', _('RECEIPT')),
+        ('I', _('INVOICE')),
+        ('P', _('PROFORMA INVOICE'))
     )
     
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)

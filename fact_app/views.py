@@ -22,6 +22,8 @@ from django.db import transaction
 
 from .utils import pagination, get_invoice
 
+from django.utils.translation import gettext as _
+
 
 
 
@@ -71,11 +73,11 @@ class HomeView(LoginRequiredSuperuserMixin, View):
                     
                 obj.save()
                 
-                messages.success(request, 'Invoice status updated successfully.')
+                messages.success(request, _('Invoice status updated successfully.'))
                 
             except Exception as e:
                 
-                messages.error(request, f'Error updating invoice status: {e}')
+                messages.error(request, _(f'Error updating invoice status: {e}'))
             
         #delete
         if request.POST.get('id_delete'):
@@ -85,11 +87,11 @@ class HomeView(LoginRequiredSuperuserMixin, View):
                 
                 obj.delete()
                 
-                messages.success(request, 'Invoice deleted successfully.')
+                messages.success(request, _('Invoice deleted successfully.'))
                 
             except Exception as e:
                 
-                messages.error(request, f'Error deleting invoice: {e}')
+                messages.error(request, _(f'Error deleting invoice: {e}'))
             
         # pagination
         if request.POST.get('page'):
@@ -126,12 +128,12 @@ class AddCustomerView(LoginRequiredSuperuserMixin, View):
         try:
             created = Customer.objects.create(**data)
             if created:
-                messages.success(request, 'Customer registered successfully.')
+                messages.success(request, _('Customer registered successfully.'))
             else:
-                messages.error(request, 'Sorry, pleace try again the sent data is corrupt.')
+                messages.error(request, _('Sorry, pleace try again the sent data is corrupt.'))
                 
         except Exception as e:
-            messages.error(request, f'Sorry our system is detecting the following issues {e}')
+            messages.error(request, _(f'Sorry our system is detecting the following issues {e}'))
             
         return render(request, self.templates_name)
 # fin d'enrégistrement du nouveau client
