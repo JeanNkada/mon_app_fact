@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-04 11:49+0100\n"
+"POT-Creation-Date: 2024-07-05 15:04+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1228,6 +1228,10 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
+#: .\fact_app\admin.py:20 .\fact_app\admin.py:21 .\fact_app\admin.py:22
+msgid "JBN INVOICE SYSTEM"
+msgstr "TYPE FACTURE"
+
 #: .\fact_app\models.py:13
 msgid "Male"
 msgstr "Masculin"
@@ -1248,33 +1252,33 @@ msgstr "Facture"
 msgid "PROFORMA INVOICE"
 msgstr "Facture Proforma"
 
-#: .\fact_app\views.py:76
+#: .\fact_app\views.py:79
 msgid "Invoice status updated successfully."
 msgstr "Statut de la facture mis à jour avec succès."
 
-#: .\fact_app\views.py:80
+#: .\fact_app\views.py:83
 #, python-brace-format
 msgid "Error updating invoice status: {e}"
 msgstr "Erreur lors de la mise à jour du statut de la facture : {e}"
 
-#: .\fact_app\views.py:90
+#: .\fact_app\views.py:93
 msgid "Invoice deleted successfully."
 msgstr "Facture supprimée avec succès."
 
-#: .\fact_app\views.py:94
+#: .\fact_app\views.py:97
 #, python-brace-format
 msgid "Error deleting invoice: {e}"
 msgstr "Erreur lors de la suppression de la facture : {e}"
 
-#: .\fact_app\views.py:131
+#: .\fact_app\views.py:134
 msgid "Customer registered successfully."
 msgstr "Client enregistré avec succès."
 
-#: .\fact_app\views.py:133
+#: .\fact_app\views.py:136
 msgid "Sorry, pleace try again the sent data is corrupt."
 msgstr "Désolé, veuillez réessayer, les données envoyées sont corrompues."
 
-#: .\fact_app\views.py:136
+#: .\fact_app\views.py:139
 #, python-brace-format
 msgid "Sorry our system is detecting the following issues {e}"
 msgstr "Désolé, notre système détecte les problèmes suivants {e}"
@@ -1350,3 +1354,47 @@ msgstr "Suppremer la facture"
 #: .\templates\index.html:175
 msgid "Are you sure you want to delete the invoice ?"
 msgstr "Etes-vous sûr de vouloir supprimer la facture ?"
+
+#: .\templates\statistic.html:7
+msgid "STATISTIC"
+msgstr "STATISTIQUE"
+
+#: .\templates\statistic.html:13
+msgid "Customers"
+msgstr "Clients"
+
+#: .\templates\statistic.html:16
+msgid "Total number of customer"
+msgstr "Nombre total des clients"
+
+#: .\templates\statistic.html:25
+msgid "Invoices"
+msgstr "Factures"
+
+#: .\templates\statistic.html:28
+msgid "Total number of invoice"
+msgstr "Nombre total de factures"
+
+#: .\templates\statistic.html:37 .\templates\statistic.html:40
+msgid "Total income"
+msgstr "Revenu total"
+
+#: .\templates\statistic.html:52
+msgid "year"
+msgstr "Année"
+
+#: .\templates\statistic.html:59
+msgid "All"
+msgstr "Tout"
+
+#: .\templates\statistic.html:74
+msgid "INCOME DIAGRAM PER MONTH"
+msgstr "DIAGRAMME DE REVENU PAR MOIS"
+
+#: .\templates\statistic.html:81
+msgid "CUSTOMERS AGE DIAGRAM"
+msgstr "DIAGRAMME D'ÂGE DES CLIENTS"
+
+#: .\templates\statistic.html:85
+msgid "CUSTOMERS GENDER DIAGRAM"
+msgstr "DIAGRAMME DE GENRE DES CLIENTS"

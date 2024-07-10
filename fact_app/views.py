@@ -3,7 +3,7 @@ from django.views import View
 from .models import *
 from django.contrib import messages
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 import pdfkit
 
@@ -23,6 +23,9 @@ from django.db import transaction
 from .utils import pagination, get_invoice
 
 from django.utils.translation import gettext as _
+
+from django.db.models.functions import ExtractMonth
+from django.db.models import Sum
 
 
 
@@ -257,5 +260,83 @@ def get_invoice_pdf(request, *args, **kwargs):
     response['Content-Disposition'] = "attachement"
     
     return response
+
+
+
+class StatisticView(LoginRequiredSuperuserMixin, View):
     
+    templates_name = 'statistic.html'
     
+    def get_sold_data_for_year(self, year=None):
+        
+        if year:
+            #Filter on specify year
+            invoices = Invoice.objects.filter(invoice_date_time__year=year)
+        
+        else:
+            invoices = Invoice.objects.all()
+        
+        #Annotation of amount sold per month
+        monthly_totals = invoices.annotate(month=ExtractMonth('invoice_date_time')).values('month').annotate(total_amount=Sum('total')).order_by('month') # liste de dict [{'month': 1, 'total_amount': 6567567},]
+        
+        result = [0] * 12
+        for item in monthly_totals:
+            result[item['month']-1] = int(item['total_amount'])
+        return result
+    
+    def get_stat_data_for_age(self, year=None):
+        range_ages_list = ['0-15', '15-25', '25-35', '35-45', '45-55', '+55']
+        data_ages = [Customer.objects.filter(age=range_elt).count() for range_elt in range_ages_list]
+        
+        if year:
+            data_ages = [Customer.objects.filter(data__year=year, age=range_elt).count() for range_elt in range_ages_list]
+        return data_ages
+    
+    def get_stat_sex(self, year=None):
+        data_sexs = [Customer.objects.filter(sex=sex).count()for sex in ['M', 'F']]
+        
+        if year:
+            data_sexs = [Customer.objects.filter(data__year=year, sex=sex).count()for sex in ['M', 'F']]
+        return data_sexs
+        
+            
+    def get(self, request, *args, **kwargs):
+        
+        customer = Customer.objects.all().count()
+        invoice = Invoice.objects.all().count()
+        income = Invoice.objects.aggregate(Sum('total')).get('total__sum')
+        
+        monthly_data = self.get_sold_data_for_year()
+        
+        data_ages = self.get_stat_data_for_age()
+        
+        data_sexs = self.get_stat_sex()
+        
+        context = {
+            'customer': customer,
+            'invoice': invoice,
+            'income': income,
+            'monthly_data': monthly_data, 
+            'data_ages': data_ages,
+            'data_sexs': data_sexs,
+        }
+        
+        return render(request, self.templates_name, context)
+    
+    def post(self, request, *args, **kwargs):
+        
+        year = request.POST.get('selected_date')
+        if year == 'Tous' or year == 'All':
+            monthly_data = self.get_sold_data_for_year()
+            
+            data_ages = self.get_stat_data_for_age()
+            
+            data_sexs = self.get_stat_sex()
+        else:
+            monthly_data = self.get_sold_data_for_year(year=year)
+            
+            data_ages = self.get_stat_data_for_age(year=year)
+            
+            data_sexs = self.get_stat_sex(year=year)
+            
+        return JsonResponse({'monthly_data': monthly_data, 'data_ages': data_ages, 'data_sexs': data_sexs})
